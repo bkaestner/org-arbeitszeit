@@ -113,12 +113,31 @@ implemented."
 (defun org-dblock-write:arbeitszeit (params)
   "Write the standard Arbeitszeittabelle.
 
-Use \\[org-dynamic-block-insert-dblock] to insert a new block.
-
 See `org-arbeitszeit--write-table' for a description of PARAMS."
+  (interactive)
   (org-arbeitszeit--write-table params))
 
-(org-dynamic-block-define "arbeitszeit" #'org-dblock-write:arbeitszeit)
+(defun org-arbeitszeit-in-arbeitszeittabelle-p ()
+  "Check if the cursor is in a arbeitszeit block."
+  (let ((pos (point)) start)
+    (save-excursion
+      (end-of-line 1)
+      (and (re-search-backward "^[ \t]*#\\+BEGIN:[ \t]+arbeitszeit" nil t)
+	   (setq start (match-beginning 0))
+	   (re-search-forward "^[ \t]*#\\+END:.*" nil t)
+	   (>= (match-end 0) pos)
+	   start))))
+
+(defun org-arbeitszeit-report ()
+  "Update dynamic arbeitszeit block at point (or insert if there is no arbeitszeit at point)."
+  (interactive)
+  (pcase (org-arbeitszeit-in-arbeitszeittabelle-p)
+    (`nil
+     (org-create-dblock '(:tstart "<-4w>" :tend "<now>" :name "arbeitszeit")))
+    (start (goto-char start)))
+  (org-update-dblock))
+
+(org-dynamic-block-define "arbeitszeit" #'org-arbeitszeit-report)
 
 (provide 'org-arbeitszeit)
 ;;; org-arbeitszeit.el ends here
