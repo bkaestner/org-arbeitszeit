@@ -1,0 +1,49 @@
+#+TITLE: Simple =arbeitszeit= table
+This is an example of a busy work week as well as a comparison with =clocktable=:
+
+Here is the =arbeitszeit= table:
+
+#+BEGIN: arbeitszeit :tstart "2022-01-03" :tend "2022-01-10"
+| Week     | Hours | +Time |
+|----------+-------+-------|
+| 2022-W01 | 41:55 | 01:55 |
+|----------+-------+-------|
+| Total:   | 41:55 | 01:55 |
+#+TBLFM: $3=$2-144000;U::@>$2..@>$>=vsum(@I..@II);U
+#+END:
+
+And here is the =clocktable=:
+
+#+BEGIN: clocktable :tstart "2022-01-03" :tend "2022-01-10"
+#+CAPTION: Clock summary at [2022-01-07 Fr 21:40]
+| Headline      | Time       |
+|---------------+------------|
+| *Total time*  | *1d 17:55* |
+|---------------+------------|
+| Support Tasks | 1d 16:25   |
+| Daily Meeting | 1:30       |
+#+END:
+
+#+COMMENT: I need a script for better and scattered examples.
+* Support Tasks
+:LOGBOOK:
+CLOCK: [2022-01-07 Fr 13:10]--[2022-01-07 Fr 17:45] =>  4:35
+CLOCK: [2022-01-07 Fr 09:15]--[2022-01-07 Fr 12:00] =>  2:45
+CLOCK: [2022-01-06 Do 13:05]--[2022-01-06 Do 18:45] =>  5:40
+CLOCK: [2022-01-06 Do 09:15]--[2022-01-06 Do 11:50] =>  2:35
+CLOCK: [2022-01-05 Mi 13:00]--[2022-01-05 Mi 18:35] =>  5:35
+CLOCK: [2022-01-05 Mi 09:15]--[2022-01-05 Mi 11:55] =>  2:40
+CLOCK: [2022-01-04 Di 13:05]--[2022-01-04 Di 18:40] =>  5:35
+CLOCK: [2022-01-04 Di 09:15]--[2022-01-04 Di 11:55] =>  2:40
+CLOCK: [2022-01-03 Mo 13:00]--[2022-01-03 Mo 18:40] =>  5:40
+CLOCK: [2022-01-03 Mo 09:15]--[2022-01-03 Mo 11:55] =>  2:40
+:END:
+* Daily Meeting                                           :meeting:recurring:
+:LOGBOOK:
+CLOCK: [2022-01-07 Fr 09:00]--[2022-01-07 Fr 09:15] =>  0:15
+CLOCK: [2022-01-06 Th 09:00]--[2022-01-06 Th 09:15] =>  0:15
+CLOCK: [2022-01-05 We 09:00]--[2022-01-05 We 09:15] =>  0:15
+CLOCK: [2022-01-04 Tu 09:00]--[2022-01-04 Tu 09:15] =>  0:15
+CLOCK: [2022-01-03 Mo 09:00]--[2022-01-03 Mo 09:30] =>  0:30
+:END:
+

@@ -1,0 +1,12 @@
+#+TITLE: org-arbeitszeit
+=org-arbeitszeit= provides a new dynamic block for Org called =arbeitszeit= (German for "working hours").
+This dynamic block collects all clocked hours and provides a weekly table to quickly see your accumulated overtime:
+[[file:screenshot.png]]
+* Installation
+Currently, there's no easy method to install =org-arbeitszeit=. A version will be pushed to MELPA after the current TODOs have been dealt with. Meanwhile you can install =org-arbeitszeit= manually.
+* Usage
+To insert a new block, use =M-x org-dynamic-block-insert-dblock= (usually bound to =C-c C-x x=) and choose =arbeitszeit=.
+* Examples
+See the [[file:examples/][examples folder]].
+* Todo
+For the current list of todos, see the [[file:org-arbeitszeit.el::;;; Todo:][lisp source itself]].
