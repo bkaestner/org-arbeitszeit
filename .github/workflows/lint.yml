@@ -1,0 +1,27 @@
+name: lint
+on: [push, pull_request]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        emacs_version:
+          - 27.1
+          - 27.2
+          - snapshot
+        ignore_warnings:
+          - true
+        include:
+          - emacs_version: snapshot
+            ignore_warnings: false
+    steps:
+    - uses: actions/checkout@v2
+    - uses: purcell/setup-emacs@master
+      with:
+        version: ${{ matrix.emacs_version }}
+    - uses: leotaku/elisp-check@master
+      with:
+        file: org-arbeitszeit.el
+        ignore_warnings: ${{ matrix.ignore_warnings }}
