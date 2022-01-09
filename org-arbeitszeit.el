@@ -72,9 +72,8 @@ The parameters `:hours-per-day' and `:days-per-week' are used to calculate your
 planned working time.  Currently, that might seem like a hassle, but will
 hopefully make more sense when the `:holidays' and `:vacations' options are
 implemented."
-
   (mapc (lambda (prop) (org-arbeitszeit--warn-reserved params prop))
-        '(:scope :match :hours-per-day :days-per-week :files :holidays :vacations))
+        '(:scope :match :files :holidays :vacations))
 
   (let ((ts (plist-get params :tstart))
 	(te (plist-get params :tend))
