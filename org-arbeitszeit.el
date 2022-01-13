@@ -5,7 +5,7 @@
 ;; Author:  Benjamin Kästner <benjamin.kaestner@gmail.com>
 ;; URL: https://github.com/bkaestner/org-arbeitszeit
 ;; Keywords: tools, org, calendar, convenience
-;; Version: 0.0.1
+;; Version: 0.0.2
 ;; Package-Requires: ((emacs "27.1"))
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -39,9 +39,6 @@
 ;; `agenda', `agenda-with-archive', ("file1" ...), FUNCTION and `file' (will be
 ;; default).  Using the trees to accumulate working hours doesn't sound right.
 ;;
-;; To discrimate different working places via tags (or to be able to clock your
-;; breaks), `:match' will be supported and work exactly as in the clocktable.
-;;
 ;; For holidays and vacations, I want to support org-references to lists and
 ;; tables. This is where the parameters :days-per-week and :hours-per-day will
 ;; come into play.
@@ -50,12 +47,11 @@
 (require 'cl-lib)
 (require 'org-clock)
 
-(defun org-arbeitszeit--warn-reserved (params prop)
-  "Warn about the usage of the reserved parameter PROP in PARAMS."
-  (when (plist-member params prop)
-    (display-warning 'org-arbeitszeit
-                     (format "the %s parameter is reserved for future use but currently not working" prop)
-                     :warning)))
+(defun org-arbeitszeit--warn-reserved (prop)
+  "Warn about the usage of the reserved parameter PROP."
+  (display-warning 'org-arbeitszeit
+                   (format "the %s parameter is reserved for future use but currently not working" prop)
+                   :warning))
 
 (defun org-arbeitszeit--write-table (params)
   "Create the Arbeitszeittabelle using PARAMS.
@@ -67,18 +63,20 @@ PARAMS is a plist containg the following entries:
                        (must be greater than :tstart)
   :hours-per-day     - your working hours per day, default `8'
   :days-per-week     - your working days per week, default '5'
+  :match             - see info node `(org) Matching tags and properties'
 
 The parameters `:hours-per-day' and `:days-per-week' are used to calculate your
 planned working time.  Currently, that might seem like a hassle, but will
 hopefully make more sense when the `:holidays' and `:vacations' options are
 implemented."
-  (mapc (lambda (prop) (org-arbeitszeit--warn-reserved params prop))
-        '(:scope :match :files :holidays :vacations))
+  (mapc #'org-arbeitszeit--warn-reserved
+        (seq-intersection params '(:scope :files :holidays :vacations)))
 
   (let ((ts (plist-get params :tstart))
 	(te (plist-get params :tend))
         (hours-per-day (or (plist-get params :hours-per-day) 8))
-        (days-per-week (or (plist-get params :days-per-week) 5)))
+        (days-per-week (or (plist-get params :days-per-week) 5))
+        (match (plist-get params :match)))
     
     (unless (and ts te)
       (error "Needs both :tstart and :tend set"))
@@ -101,7 +99,7 @@ implemented."
         (save-excursion
           (save-restriction
             (widen)
-            (setq weektime (+ weektime (cadr (org-clock-get-table-data nil (list :block week)))))))
+            (setq weektime (+ weektime (cadr (org-clock-get-table-data nil (list :block week :match match)))))))
         (insert (format "|%s|%s|\n" week (org-duration-from-minutes weektime 'h:mm)))
         (setq ts nts)))
     (insert-before-markers "|-\n|Total:|\n")
