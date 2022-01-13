@@ -1,11 +1,24 @@
 #+TITLE: org-arbeitszeit
 =org-arbeitszeit= provides a new dynamic block for Org called =arbeitszeit= (German for "working hours").
 This dynamic block collects all clocked hours and provides a weekly table to quickly see your accumulated overtime:
+
 [[file:screenshot.png]]
 * Installation
 Currently, there's no easy method to install =org-arbeitszeit=. A version will be pushed to MELPA after the current TODOs have been dealt with. Meanwhile you can install =org-arbeitszeit= manually.
 * Usage
 To insert a new block, use =M-x org-dynamic-block-insert-dblock= (usually bound to =C-c C-x x=) and choose =arbeitszeit=.
+* Customization
+=org-arbeitszeit= provides a customization group, also called =org-arbeitszeit=. Use =M-x customize-group RET org-arbeitszeit RET= to customize the values to your liking or set them in your configuration:
+#+begin_src emacs-lisp
+  ;; You only work 4 days per week...
+  (setq org-arbeitszeit-days-per-week 4
+        ;; ... but 10 hours on each day.
+        org-arbeitszeit-hours-per-day 10
+        ;; Don't include worked clocked on headlines that are tagged
+        ;; with break, nonwork or private
+        org-arbeitszeit-match "-break-nonwork-private")
+#+end_src
+You can also set these values on a file (via =M-x add-file-local-variable=) or directory level (=M-x add-dir-local-variable=).
 * Examples
 See the [[file:examples/][examples folder]].
 * Todo

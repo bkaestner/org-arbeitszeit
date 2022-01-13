@@ -47,11 +47,43 @@
 (require 'cl-lib)
 (require 'org-clock)
 
+(defgroup org-arbeitszeit nil
+  "Calculate your worktime from org clocks."
+  :group 'org
+  :link '(emacs-commentary-link "org-arbeitszeit")
+  :link '(url-link :tag "GitHub page" "https://github.com/bkaestner/org-arbeitszeit"))
+
+(defcustom org-arbeitszeit-hours-per-day 8
+  "The hours per working day.
+
+You can specify the hours per day on a block level via :hours-per-day, see `org-arbeitszeit--write-table'."
+  :group 'org-arbeitszeit
+  :safe 'numberp
+  :type 'number)
+
+(defcustom org-arbeitszeit-days-per-week 5
+  "The days per week.
+
+You can specify the hours per day on a block level via :hours-per-day, see `org-arbeitszeit--write-table'."
+  :group 'org-arbeitszeit
+  :safe 'numberp
+  :type 'number)
+
+(defcustom org-arbeitszeit-match nil
+  "The matcher for Org headlines.
+
+See info node `(org) Matching tags and properties' for a description of proper values."
+  :group 'org-arbeitszeit
+  :safe 'stringp
+  :link '(info-link :tag "Org's matching documentation" "(org) Matching tags and properties")
+  :type '(choice (const :tag "All" nil) string))
+
 (defun org-arbeitszeit--warn-reserved (prop)
   "Warn about the usage of the reserved parameter PROP."
-  (display-warning 'org-arbeitszeit
-                   (format "the %s parameter is reserved for future use but currently not working" prop)
-                   :warning))
+  (display-warning
+   'org-arbeitszeit
+   (format "the %s parameter is reserved for future use but currently not working" prop)
+   :warning))
 
 (defun org-arbeitszeit--write-table (params)
   "Create the Arbeitszeittabelle using PARAMS.
@@ -74,9 +106,12 @@ implemented."
 
   (let ((ts (plist-get params :tstart))
 	(te (plist-get params :tend))
-        (hours-per-day (or (plist-get params :hours-per-day) 8))
-        (days-per-week (or (plist-get params :days-per-week) 5))
-        (match (plist-get params :match)))
+        (hours-per-day (or (plist-get params :hours-per-day)
+                           org-arbeitszeit-hours-per-day))
+        (days-per-week (or (plist-get params :days-per-week)
+                           org-arbeitszeit-days-per-week))
+        (match (or (plist-get params :match)
+                   org-arbeitszeit-match)))
     
     (unless (and ts te)
       (error "Needs both :tstart and :tend set"))
