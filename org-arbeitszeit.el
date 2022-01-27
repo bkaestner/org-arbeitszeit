@@ -148,7 +148,7 @@ Assumed you use the :break: tag, you end up with:
         (insert (format "|%s|%s|\n" week (org-duration-from-minutes weektime 'h:mm)))
         (setq ts nts)))
     (insert-before-markers "|-\n|Total:|\n")
-    (insert-before-markers (format "#+TBLFM: $3=$2-%s;U::@>$2..@>$>=vsum(@I..@II);U" (* 60 60 hours-per-day days-per-week) 'h:mm)))
+    (insert-before-markers (format "#+TBLFM: $3=$2-%s;U::@>$2..@>$>=vsum(@I..@II);U" (* 60 60 hours-per-day days-per-week))))
   (forward-line -1)
   (org-table-recalculate t))
 
