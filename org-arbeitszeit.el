@@ -48,7 +48,7 @@
 (require 'org-clock)
 
 (defgroup org-arbeitszeit nil
-  "Calculate your worktime from org clocks."
+  "Calculate your worktime from org clock logbooks."
   :group 'org
   :link '(emacs-commentary-link "org-arbeitszeit")
   :link '(url-link :tag "GitHub page" "https://github.com/bkaestner/org-arbeitszeit"))
@@ -100,7 +100,17 @@ PARAMS is a plist containg the following entries:
 The parameters `:hours-per-day' and `:days-per-week' are used to calculate your
 planned working time.  Currently, that might seem like a hassle, but will
 hopefully make more sense when the `:holidays' and `:vacations' options are
-implemented."
+implemented.
+
+If you provide a :match value then only matched values will show up in your
+table.  This can come in handy, for example if you also clock in your breaks
+for a complete continous clocked day.
+
+Assumed you use the :break: tag, you end up with:
+
+    #+BEGIN: arbeitszeit :match \"-break\"
+    ...
+    #+END:"
   (mapc #'org-arbeitszeit--warn-reserved
         (seq-intersection params '(:scope :files :holidays :vacations)))
 
