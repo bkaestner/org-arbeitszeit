@@ -6,25 +6,52 @@ Here is the =arbeitszeit= table:
 #+BEGIN: arbeitszeit :tstart "2022-01-03" :tend "2022-01-10"
 | Week     | Hours | +Time |
 |----------+-------+-------|
-| 2022-W01 | 41:55 | 01:55 |
+| 2022-W01 | 47:25 | 07:25 |
 |----------+-------+-------|
-| Total:   | 41:55 | 01:55 |
+| Total:   | 47:25 | 07:25 |
 #+TBLFM: $3=$2-144000;U::@>$2..@>$>=vsum(@I..@II);U
 #+END:
 
-And here is the =clocktable=:
+And here is the =clocktable= (=1d= is =24h=):
 
-#+BEGIN: clocktable :tstart "2022-01-03" :tend "2022-01-10"
-#+CAPTION: Clock summary at [2022-01-07 Fr 21:40]
+#+BEGIN: clocktable :scope file :tstart "2022-01-03" :tend "2022-01-10"
+#+CAPTION: Clock summary at [2022-01-27 Do 08:23]
 | Headline      | Time       |
 |---------------+------------|
-| *Total time*  | *1d 17:55* |
+| *Total time*  | *1d 23:25* |
 |---------------+------------|
-| Support Tasks | 1d 16:25   |
+| Support Tasks | 1d 16:10   |
+| Daily Meeting | 1:30       |
+| Breaks        | 5:45       |
+#+END:
+#+COMMENT: I need a script for better and scattered examples.
+
+* Times without breaks
+Same tables, but without breaks:
+
+Here is the =arbeitszeit= table:
+
+#+BEGIN: arbeitszeit :tstart "2022-01-03" :tend "2022-01-10" :match "-break"
+| Week     | Hours | +Time |
+|----------+-------+-------|
+| 2022-W01 | 41:40 | 01:40 |
+|----------+-------+-------|
+| Total:   | 41:40 | 01:40 |
+#+TBLFM: $3=$2-144000;U::@>$2..@>$>=vsum(@I..@II);U
+#+END:
+
+And here is the =clocktable= (=1d= is =24h=):
+
+#+BEGIN: clocktable :scope file :tstart "2022-01-03" :tend "2022-01-10" :match "-break"
+#+CAPTION: Clock summary at [2022-01-27 Do 08:23]
+| Headline      | Time       |
+|---------------+------------|
+| *Total time*  | *1d 17:40* |
+|---------------+------------|
+| Support Tasks | 1d 16:10   |
 | Daily Meeting | 1:30       |
 #+END:
 
-#+COMMENT: I need a script for better and scattered examples.
 * Support Tasks
 :LOGBOOK:
 CLOCK: [2022-01-07 Fr 13:10]--[2022-01-07 Fr 17:45] =>  4:35
@@ -36,7 +63,7 @@ CLOCK: [2022-01-05 Mi 09:15]--[2022-01-05 Mi 11:55] =>  2:40
 CLOCK: [2022-01-04 Di 13:05]--[2022-01-04 Di 18:40] =>  5:35
 CLOCK: [2022-01-04 Di 09:15]--[2022-01-04 Di 11:55] =>  2:40
 CLOCK: [2022-01-03 Mo 13:00]--[2022-01-03 Mo 18:40] =>  5:40
-CLOCK: [2022-01-03 Mo 09:15]--[2022-01-03 Mo 11:55] =>  2:40
+CLOCK: [2022-01-03 Mo 09:30]--[2022-01-03 Mo 11:55] =>  2:25
 :END:
 * Daily Meeting                                           :meeting:recurring:
 :LOGBOOK:
@@ -46,4 +73,11 @@ CLOCK: [2022-01-05 We 09:00]--[2022-01-05 We 09:15] =>  0:15
 CLOCK: [2022-01-04 Tu 09:00]--[2022-01-04 Tu 09:15] =>  0:15
 CLOCK: [2022-01-03 Mo 09:00]--[2022-01-03 Mo 09:30] =>  0:30
 :END:
-
+* Breaks                                                  :break:
+:LOGBOOK:
+CLOCK: [2022-01-07 Fr 12:00]--[2022-01-07 Fr 13:10] =>  1:10
+CLOCK: [2022-01-06 Th 11:50]--[2022-01-06 Th 13:05] =>  1:15
+CLOCK: [2022-01-05 We 11:55]--[2022-01-05 We 13:00] =>  1:05
+CLOCK: [2022-01-04 Tu 11:55]--[2022-01-04 Tu 13:05] =>  1:10
+CLOCK: [2022-01-03 Mo 11:55]--[2022-01-03 Mo 13:00] =>  1:05
+:END:
