@@ -159,7 +159,7 @@ See `org-arbeitszeit--write-table' for a description of PARAMS."
   (interactive)
   (org-arbeitszeit--write-table params))
 
-(defun org-arbeitszeit-in-arbeitszeittabelle-p ()
+(defun org-arbeitszeit-point-in-arbeitszeittabelle-p ()
   "Check if the cursor is in a arbeitszeit block."
   (let ((pos (point)) start)
     (save-excursion
@@ -173,7 +173,7 @@ See `org-arbeitszeit--write-table' for a description of PARAMS."
 (defun org-arbeitszeit-report ()
   "Update dynamic arbeitszeit block at point (or insert if there is no arbeitszeit at point)."
   (interactive)
-  (pcase (org-arbeitszeit-in-arbeitszeittabelle-p)
+  (pcase (org-arbeitszeit-point-in-arbeitszeittabelle-p)
     (`nil
      (org-create-dblock '(:tstart "<-4w>" :tend "<now>" :name "arbeitszeit")))
     (start (goto-char start)))
