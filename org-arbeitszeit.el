@@ -85,6 +85,15 @@ See info node `(org) Matching tags and properties' for a description of proper v
    (format "the %s parameter is reserved for future use but currently not working" prop)
    :warning))
 
+(defun org-arbeitszeit--get-weektime (week match)
+  "Get the weektime in WEEK matching MATCH in the current buffer.
+
+All restrictions are ignored."
+  (save-excursion
+    (save-restriction
+      (widen)
+      (cadr (org-clock-get-table-data nil (list :block week :match match))))))
+
 (defun org-arbeitszeit--write-table (params)
   "Create the Arbeitszeittabelle using PARAMS.
 
@@ -112,16 +121,24 @@ Assumed you use the :break: tag, you end up with:
     ...
     #+END:"
   (mapc #'org-arbeitszeit--warn-reserved
-        (seq-intersection params '(:scope :files :holidays :vacations)))
+        (seq-intersection params '(:files :holidays :vacations)))
 
-  (let ((ts (plist-get params :tstart))
+  (let ((scope (plist-get params :scope))
+        (ts (plist-get params :tstart))
 	(te (plist-get params :tend))
         (hours-per-day (or (plist-get params :hours-per-day)
                            org-arbeitszeit-hours-per-day))
         (days-per-week (or (plist-get params :days-per-week)
                            org-arbeitszeit-days-per-week))
         (match (or (plist-get params :match)
-                   org-arbeitszeit-match)))
+                   org-arbeitszeit-match))
+        files)
+    (setq files
+          (pcase scope
+            ((pred consp) scope)
+            (`agenda (org-agenda-files t))
+            (`agenda-with-archives
+             (org-add-archive-files (org-agenda-files t)))))
     
     (unless (and ts te)
       (error "Needs both :tstart and :tend set"))
@@ -132,19 +149,21 @@ Assumed you use the :break: tag, you end up with:
     (setq ts (org-date-to-gregorian ts))
     (setq te (org-date-to-gregorian te))
 
+    (when files 
+      (org-agenda-prepare-buffers (if (consp files) files (list files))))
+
     (insert-before-markers "| Week | Hours | +Time |\n|-\n")
 
     (while (calendar-date-compare (list ts) (list te))
       (let ((week (org-format-time-string "%Y-W%0W" (org-time-from-absolute ts)))
             (nts  (list (car ts) (+ 7 (cadr ts)) (caddr ts)))
             (weektime 0))
-        ;; Currently fixed to current file. I have another version that works among all
-        ;; agenda files ready, but I'd like to provide some :scope support before I throw that
-        ;; onto the user.
-        (save-excursion
-          (save-restriction
-            (widen)
-            (setq weektime (+ weektime (cadr (org-clock-get-table-data nil (list :block week :match match)))))))
+        (setq weektime
+              (if (consp files)
+                  (cl-loop for file in files
+                           sum (with-current-buffer (find-buffer-visiting file)
+                                 (org-arbeitszeit--get-weektime)))
+                (org-arbeitszeit--get-weektime)))
         (insert (format "|%s|%s|\n" week (org-duration-from-minutes weektime 'h:mm)))
         (setq ts nts)))
     (insert-before-markers "|-\n|Total:|\n")
