@@ -162,8 +162,8 @@ Assumed you use the :break: tag, you end up with:
               (if (consp files)
                   (cl-loop for file in files
                            sum (with-current-buffer (find-buffer-visiting file)
-                                 (org-arbeitszeit--get-weektime)))
-                (org-arbeitszeit--get-weektime)))
+                                 (org-arbeitszeit--get-weektime week match)))
+                (org-arbeitszeit--get-weektime week match)))
         (insert (format "|%s|%s|\n" week (org-duration-from-minutes weektime 'h:mm)))
         (setq ts nts)))
     (insert-before-markers "|-\n|Total:|\n")
