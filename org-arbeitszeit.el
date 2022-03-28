@@ -32,13 +32,6 @@
 
 ;;; Todo:
 
-;; `org-arbeitszeit' is currently limited to the current `org-mode' buffer.  I
-;; already have a proof of concept at hand for the agenda files, but I believe
-;; that the current `org-dblock-write:clocktable' can be inspected for more
-;; better `:scope' handling in general. The invisioned `:scope' values are
-;; `agenda', `agenda-with-archive', ("file1" ...), FUNCTION and `file' (will be
-;; default).  Using the trees to accumulate working hours doesn't sound right.
-;;
 ;; For holidays and vacations, I want to support org-references to lists and
 ;; tables. This is where the parameters :days-per-week and :hours-per-day will
 ;; come into play.
@@ -72,7 +65,8 @@ You can specify the hours per day on a block level via :hours-per-day, see `org-
 (defcustom org-arbeitszeit-match nil
   "The matcher for Org headlines.
 
-See info node `(org) Matching tags and properties' for a description of proper values."
+See info node `(org) Matching tags and properties' for a
+description of proper values."
   :group 'org-arbeitszeit
   :safe 'stringp
   :link '(info-link :tag "Org's matching documentation" "(org) Matching tags and properties")
@@ -85,14 +79,15 @@ See info node `(org) Matching tags and properties' for a description of proper v
    (format "the %s parameter is reserved for future use but currently not working" prop)
    :warning))
 
-(defun org-arbeitszeit--get-weektime (week match)
+(defun org-arbeitszeit--get-weektime (week match &optional file)
   "Get the weektime in WEEK matching MATCH in the current buffer.
 
-All restrictions are ignored."
+All restrictions are ignored.  Use FILE as identifer for
+`org-clock-get-table-data' if supplied."
   (save-excursion
     (save-restriction
       (widen)
-      (cadr (org-clock-get-table-data nil (list :block week :match match))))))
+      (cadr (org-clock-get-table-data file (list :block week :match match))))))
 
 (defun org-arbeitszeit--write-table (params)
   "Create the Arbeitszeittabelle using PARAMS.
@@ -102,6 +97,11 @@ PARAMS is a plist containg the following entries:
   :tstart (REQUIRED) - the start of your tracked time
   :tend   (REQUIRED) - the end of your tracked time
                        (must be greater than :tstart)
+  :scope             - one of the following variants:
+     nil (or not specified) - current file
+     agenda                - files in the agenda
+     agenda-with-archives  - files in the agenda, including their archives
+     (\"file1\" \"file2\") - list of files
   :hours-per-day     - your working hours per day, default `8'
   :days-per-week     - your working days per week, default '5'
   :match             - see info node `(org) Matching tags and properties'
@@ -121,11 +121,11 @@ Assumed you use the :break: tag, you end up with:
     ...
     #+END:"
   (mapc #'org-arbeitszeit--warn-reserved
-        (seq-intersection params '(:files :holidays :vacations)))
+        (seq-intersection params '(:holidays :vacations)))
 
   (let ((scope (plist-get params :scope))
         (ts (plist-get params :tstart))
-	(te (plist-get params :tend))
+        (te (plist-get params :tend))
         (hours-per-day (or (plist-get params :hours-per-day)
                            org-arbeitszeit-hours-per-day))
         (days-per-week (or (plist-get params :days-per-week)
@@ -139,7 +139,7 @@ Assumed you use the :break: tag, you end up with:
             (`agenda (org-agenda-files t))
             (`agenda-with-archives
              (org-add-archive-files (org-agenda-files t)))))
-    
+
     (unless (and ts te)
       (error "Needs both :tstart and :tend set"))
     (when (string-match-p "<\\|>" ts)
@@ -149,7 +149,7 @@ Assumed you use the :break: tag, you end up with:
     (setq ts (org-date-to-gregorian ts))
     (setq te (org-date-to-gregorian te))
 
-    (when files 
+    (when files
       (org-agenda-prepare-buffers (if (consp files) files (list files))))
 
     (insert-before-markers "| Week | Hours | +Time |\n|-\n")
@@ -167,7 +167,9 @@ Assumed you use the :break: tag, you end up with:
         (insert (format "|%s|%s|\n" week (org-duration-from-minutes weektime 'h:mm)))
         (setq ts nts)))
     (insert-before-markers "|-\n|Total:|\n")
-    (insert-before-markers (format "#+TBLFM: $3=$2-%s;U::@>$2..@>$>=vsum(@I..@II);U" (* 60 60 hours-per-day days-per-week))))
+    (insert-before-markers
+     (format "#+TBLFM: $3=$2-%s;U::@>$2..@>$>=vsum(@I..@II);U"
+             (* 60 60 hours-per-day days-per-week))))
   (forward-line -1)
   (org-table-recalculate t))
 
@@ -184,10 +186,10 @@ See `org-arbeitszeit--write-table' for a description of PARAMS."
     (save-excursion
       (end-of-line 1)
       (and (re-search-backward "^[ \t]*#\\+BEGIN:[ \t]+arbeitszeit" nil t)
-	   (setq start (match-beginning 0))
-	   (re-search-forward "^[ \t]*#\\+END:.*" nil t)
-	   (>= (match-end 0) pos)
-	   start))))
+           (setq start (match-beginning 0))
+           (re-search-forward "^[ \t]*#\\+END:.*" nil t)
+           (>= (match-end 0) pos)
+           start))))
 
 (defun org-arbeitszeit-report ()
   "Update dynamic arbeitszeit block at point (or insert if there is no arbeitszeit at point)."
