@@ -26,6 +26,21 @@ And here is the =clocktable= (=1d= is =24h=):
 #+END:
 #+COMMENT: I need a script for better and scattered examples.
 
+* Starting with some offset
+If you want to start with some offset, then you can use ~:start-with HH:MM~ as additional header parameter. For example, let's say we already had 3:45 of additional time:
+
+#+BEGIN: arbeitszeit :tstart "2022-01-03" :tend "2022-01-10" :start-with 3:45
+| Week     | Hours | +Time |
+|----------+-------+-------|
+| Start    |       | 03:45 |
+| 2022-W01 | 47:25 | 07:25 |
+|----------+-------+-------|
+| Total:   | 47:25 | 11:10 |
+#+TBLFM: $3=$2-144000;U::@>$2..@>$>=vsum(@I..@II);U::@2$3=3:45;U
+#+END:
+
+This also allows you to keep the ~:tstart~ to ~:tend~ ranges small, which mitigates some performance issues if you want to calculate a lot of weeks.
+
 * Times without breaks
 Same tables, but without breaks:
 
