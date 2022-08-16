@@ -104,6 +104,7 @@ PARAMS is a plist containg the following entries:
      (\"file1\" \"file2\") - list of files
   :hours-per-day     - your working hours per day, default `8'
   :days-per-week     - your working days per week, default '5'
+  :start-with        - time that shall be added to the table in a first row
   :match             - see info node `(org) Matching tags and properties'
 
 The parameters `:hours-per-day' and `:days-per-week' are used to calculate your
@@ -130,6 +131,7 @@ Assumed you use the :break: tag, you end up with:
                            org-arbeitszeit-hours-per-day))
         (days-per-week (or (plist-get params :days-per-week)
                            org-arbeitszeit-days-per-week))
+        (start-with (plist-get params :start-with))
         (match (or (plist-get params :match)
                    org-arbeitszeit-match))
         files)
@@ -154,6 +156,9 @@ Assumed you use the :break: tag, you end up with:
 
     (insert-before-markers "| Week | Hours | +Time |\n|-\n")
 
+    (when start-with
+      (insert-before-markers "| Start |||\n"))
+
     (while (calendar-date-compare (list ts) (list te))
       (let ((week (org-format-time-string "%Y-W%0W" (org-time-from-absolute ts)))
             (nts  (list (car ts) (+ 7 (cadr ts)) (caddr ts)))
@@ -169,7 +174,9 @@ Assumed you use the :break: tag, you end up with:
     (insert-before-markers "|-\n|Total:|\n")
     (insert-before-markers
      (format "#+TBLFM: $3=$2-%s;U::@>$2..@>$>=vsum(@I..@II);U"
-             (* 60 60 hours-per-day days-per-week))))
+             (* 60 60 hours-per-day days-per-week)))
+    (when start-with
+      (insert-before-markers (format "::@2$3=%s;U" start-with))))
   (forward-line -1)
   (org-table-recalculate t))
 
