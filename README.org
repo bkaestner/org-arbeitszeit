@@ -1,10 +1,23 @@
-#+TITLE: org-arbeitszeit
+#+TITLE: org-arbeitszeit     [[https://melpa.org/#/org-arbeitszeit][file:https://melpa.org/packages/org-arbeitszeit-badge.svg]]
 =org-arbeitszeit= provides a new dynamic block for Org called =arbeitszeit= (German for "working hours").
 This dynamic block collects all clocked hours and provides a weekly table to quickly see your accumulated overtime:
 
 [[file:screenshot.png]]
 * Installation
-Currently, there's no easy method to install =org-arbeitszeit=. A version will be pushed to MELPA after the current TODOs have been dealt with. Meanwhile you can install =org-arbeitszeit= manually.
+The easiest way to install =org-arbeitszeit= is MELPA. You can use ~package.el~:
+
+#+begin_src emacs-lisp
+;; Set up package.el to work with MELPA
+(require 'package)
+(add-to-list 'package-archives
+             '("melpa" . "https://melpa.org/packages/"))
+(package-initialize)
+(package-refresh-contents)
+
+;; Download org-arbeitszeit
+(unless (package-installed-p 'org-arbeitszeit)
+  (package-install 'org-arbeitszeit))
+#+end_src
 * Usage
 To insert a new block, use =M-x org-dynamic-block-insert-dblock= (usually bound to =C-c C-x x=) and choose =arbeitszeit=.
 * Customization
