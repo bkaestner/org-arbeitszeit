@@ -160,7 +160,7 @@ Assumed you use the :break: tag, you end up with:
       (insert-before-markers "| Start |||\n"))
 
     (while (calendar-date-compare (list ts) (list te))
-      (let ((week (org-format-time-string "%Y-W%0W" (org-time-from-absolute ts)))
+      (let ((week (org-format-time-string "%G-W%V" (org-time-from-absolute ts)))
             (nts  (list (car ts) (+ 7 (cadr ts)) (caddr ts)))
             (weektime 0))
         (setq weektime
